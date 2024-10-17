@@ -1,11 +1,12 @@
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
 import React from 'react';
+import Container from 'components/Container';
 
 const MenuScreen = () => {
   return (
-    <View>
+    <Container>
       <Text>MenuScreen</Text>
-    </View>
+    </Container>
   );
 };
 
