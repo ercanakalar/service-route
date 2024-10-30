@@ -1,0 +1,3 @@
+dotnet ef migrations add InitialCreate --startup-project Backend.API --project Backend.Data
+
+dotnet ef database update --project Backend.Data --startup-project Backend.API
