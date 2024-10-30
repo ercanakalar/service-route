@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Backend.Core.Models.User;
+using Backend.Core.Models.Auth;
 using Backend.Core.Services;
 using Backend.Service.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -24,14 +24,14 @@ namespace Backend.API.Controllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup([FromBody] SignupRequest request)
+        public async Task<IActionResult> CreateUser([FromBody] SignupRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var newUser = await _userService.Signup(request);
+            var newUser = await _userService.CreateUser(request);
             if (newUser.IsSuccess == false)
             {
                 return BadRequest(newUser);
@@ -86,7 +86,6 @@ namespace Backend.API.Controllers
         [Authorize(Policy = "ShouldBeAdminOrManager")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            Console.WriteLine(id);
             var user = await _userService.GetUserById(id);
             return Ok(user);
         }

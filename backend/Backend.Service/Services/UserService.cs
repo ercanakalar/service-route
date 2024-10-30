@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Backend.Core.Models.Auth;
 using Backend.Core.Models.Error;
 using Backend.Core.Models.User;
 using Backend.Core.Services;
@@ -30,22 +31,22 @@ namespace Backend.Service.Services
             _passwordManager = passwordManager;
         }
 
-        public async Task<UserResponse> Signup(SignupRequest request)
+        public async Task<AuthResponse> CreateUser(SignupRequest request)
         {
-            var existingUser = await _unitOfWork.Users.GetByEmailAsync(request.Email);
+            var existingUser = await _unitOfWork.Auth.GetByEmailAsync(request.Email);
             if (existingUser != null)
             {
-                return new UserResponse
+                return new AuthResponse
                 {
                     IsSuccess = false,
-                    ErrorMessage = "User with this email already exists",
+                    ErrorMessage = "Auth with this email already exists",
                     StatusCode = 409,
                 };
             }
 
             var hashedPassword = _passwordManager.HashPassword(request.Password);
             var hashedConfirmPassword = _passwordManager.HashPassword(request.Password);
-            var user = new User
+            var auth = new Auth
             {
                 Username = request.Username,
                 Email = request.Email,
@@ -54,36 +55,43 @@ namespace Backend.Service.Services
                 Roles = request.Roles ?? new List<string> { "User" },
             };
 
-            await _unitOfWork.Users.AddAsync(user);
-            await _unitOfWork.CommitAsync();
-
-            var roles = user.Roles;
-            var accessToken = _tokenService.GenerateToken(user, roles);
-            var refreshToken = _tokenService.GenerateToken(user, roles);
-
-            user.AccessToken = accessToken;
-            user.RefreshToken = refreshToken;
-
-            _unitOfWork.Users.Update(user);
-            await _unitOfWork.CommitAsync();
-
-            return new UserResponse
+            var user = new User
             {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
+                Auth = auth
+            };
+
+            auth.User = user;
+
+            await _unitOfWork.Auth.AddAsync(auth);
+            await _unitOfWork.CommitAsync();
+
+            var roles = auth.Roles;
+            var accessToken = _tokenService.GenerateToken(auth, roles);
+            var refreshToken = _tokenService.GenerateToken(auth, roles);
+
+            auth.AccessToken = accessToken;
+            auth.RefreshToken = refreshToken;
+
+            _unitOfWork.Auth.Update(auth);
+            await _unitOfWork.CommitAsync();
+
+            return new AuthResponse
+            {
+                Id = auth.Id,
+                Username = auth.Username,
+                Email = auth.Email,
                 Token = accessToken,
                 IsSuccess = true,
                 StatusCode = 200,
             };
         }
 
-        public async Task<UserResponse> Signin(SigninRequest request)
+        public async Task<AuthResponse> Signin(SigninRequest request)
         {
-            var user = await _unitOfWork.Users.GetByEmailAsync(request.Email);
+            var user = await _unitOfWork.Auth.GetByEmailAsync(request.Email);
             if (user == null)
             {
-                return new UserResponse
+                return new AuthResponse
                 {
                     IsSuccess = false,
                     ErrorMessage = "Invalid email or password",
@@ -93,7 +101,7 @@ namespace Backend.Service.Services
 
             if (!_passwordManager.VerifyPassword(user.Password, request.Password))
             {
-                return new UserResponse
+                return new AuthResponse
                 {
                     IsSuccess = false,
                     ErrorMessage = "Invalid email or password",
@@ -118,10 +126,10 @@ namespace Backend.Service.Services
 
             user.AccessToken = _tokenService.GenerateExpiredToken(user, roles);
 
-            _unitOfWork.Users.Update(user);
+            _unitOfWork.Auth.Update(user);
             await _unitOfWork.CommitAsync();
 
-            return new UserResponse
+            return new AuthResponse
             {
                 Id = user.Id,
                 Username = user.Username,
@@ -133,20 +141,20 @@ namespace Backend.Service.Services
 
         public async Task<List<AllUsers>> GetUsers()
         {
-            return await _unitOfWork.Users.GetUsers();
+            return await _unitOfWork.Auth.GetUsers();
         }
 
-        public async Task<TheUser> GetUserById(int id)
+        public async Task<AuthGeneralResponse> GetUserById(int id)
         {
-            return await _unitOfWork.Users.GetUserById(id);
+            return await _unitOfWork.Auth.GetUserById(id);
         }
 
-        public async Task<UserResponse> UpdateUser(UpdateUserRequest request)
+        public async Task<AuthResponse> UpdateUser(UpdateUserRequest request)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(request.Id);
-            if (user == null)
+            var existUser = await _unitOfWork.Auth.GetByIdAsync(request.Id);
+            if (existUser == null)
             {
-                return new UserResponse
+                return new AuthResponse
                 {
                     IsSuccess = false,
                     ErrorMessage = "User not found",
@@ -154,34 +162,50 @@ namespace Backend.Service.Services
                 };
             }
 
-            user.Username = request.Username;
-            user.Email = request.Email;
-            user.Roles = request.Roles ?? user.Roles;
-            user.Password = _passwordManager.HashPassword(request.Password);
-            user.ConfirmPassword =
+            if (existUser.User == null)
+            {
+                return new AuthResponse
+                {
+                    IsSuccess = false,
+                    ErrorMessage = "Associated user not found",
+                    StatusCode = 404,
+                };
+            }
+
+            if (request.CompanyId != null)
+            {
+                existUser.User.CompanyId = request.CompanyId;
+            }
+
+            existUser.Username = request.Username;
+            existUser.Email = request.Email;
+            existUser.Roles = request.Roles ?? existUser.Roles;
+            existUser.Password = _passwordManager.HashPassword(request.Password);
+            existUser.ConfirmPassword =
                 request.Password ?? _passwordManager.HashPassword(request.Password);
 
-            _unitOfWork.Users.Update(user);
+            _unitOfWork.Auth.Update(existUser);
+
             await _unitOfWork.CommitAsync();
 
-            return new UserResponse
+            return new AuthResponse
             {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                Token = user.AccessToken,
-                Message = "User updated successfully",
+                Id = existUser.Id,
+                Username = existUser.Username,
+                Email = existUser.Email,
+                Token = existUser.AccessToken,
+                Message = "Auth updated successfully",
                 IsSuccess = true,
                 StatusCode = 200,
             };
         }
 
-        public async Task<UserResponse> UpdateTheUser(UpdateUserRequest request, int id)
+        public async Task<AuthResponse> UpdateTheUser(UpdateUserRequest request, int id)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
+            var user = await _unitOfWork.Auth.GetByIdAsync(id);
             if (user == null)
             {
-                return new UserResponse
+                return new AuthResponse
                 {
                     IsSuccess = false,
                     ErrorMessage = "User not found",
@@ -189,10 +213,10 @@ namespace Backend.Service.Services
                 };
             }
 
-            var isThereUserName = await _unitOfWork.Users.GetByUsernameAsync(request.Username);
+            var isThereUserName = await _unitOfWork.Auth.GetByUsernameAsync(request.Username);
             if (isThereUserName != null)
             {
-                return new UserResponse
+                return new AuthResponse
                 {
                     IsSuccess = false,
                     ErrorMessage = "Username already exists",
@@ -201,10 +225,10 @@ namespace Backend.Service.Services
             }
             user.Username = request.Username;
 
-            var isThereEmail = await _unitOfWork.Users.GetByEmailAsync(request.Email);
+            var isThereEmail = await _unitOfWork.Auth.GetByEmailAsync(request.Email);
             if (isThereEmail != null)
             {
-                return new UserResponse
+                return new AuthResponse
                 {
                     IsSuccess = false,
                     ErrorMessage = "Email already exists",
@@ -217,16 +241,16 @@ namespace Backend.Service.Services
             user.ConfirmPassword =
                 request.Password ?? _passwordManager.HashPassword(request.Password);
 
-            _unitOfWork.Users.Update(user);
+            _unitOfWork.Auth.Update(user);
             await _unitOfWork.CommitAsync();
 
-            return new UserResponse
+            return new AuthResponse
             {
                 Id = user.Id,
                 Username = user.Username,
                 Email = user.Email,
                 Token = user.AccessToken,
-                Message = "User updated successfully",
+                Message = "Auth updated successfully",
                 IsSuccess = true,
                 StatusCode = 200,
             };

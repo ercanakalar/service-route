@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 
-namespace Backend.Core.Models.User
+namespace Backend.Core.Models.Auth
 {
     public class SignupRequest
     {

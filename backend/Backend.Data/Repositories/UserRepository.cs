@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
-using Backend.Core.Models.User;
+using Backend.Core.Models.Auth;
 using Backend.Core.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data.Repositories
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : Repository<Auth>, IUserRepository
     {
         public AppDbContext appDbContext
         {
@@ -15,30 +15,9 @@ namespace Backend.Data.Repositories
         public UserRepository(AppDbContext context)
             : base(context) { }
 
-        public async Task<UserResponse> Signup(SignupRequest signupRequestDto)
+        public async Task<AuthResponse> Signin(SigninRequest signinRequestDto)
         {
-            var user = new User
-            {
-                Username = signupRequestDto.Username,
-                Email = signupRequestDto.Email,
-                Password = signupRequestDto.Password,
-            };
-
-            await appDbContext.Users.AddAsync(user);
-            await appDbContext.SaveChangesAsync();
-
-            return new UserResponse
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                Message = "You have successfully registered.",
-            };
-        }
-
-        public async Task<UserResponse> Signin(SigninRequest signinRequestDto)
-        {
-            var user = await appDbContext.Users.SingleOrDefaultAsync(u =>
+            var user = await appDbContext.Auth.SingleOrDefaultAsync(u =>
                 u.Email == signinRequestDto.Email
             );
 
@@ -47,7 +26,7 @@ namespace Backend.Data.Repositories
                 return null;
             }
 
-            return new UserResponse
+            return new AuthResponse
             {
                 Id = user.Id,
                 Username = user.Username,
@@ -56,41 +35,47 @@ namespace Backend.Data.Repositories
             };
         }
 
-        public async Task<User> GetByEmailAsync(string email)
+        public async Task<Auth> GetByEmailAsync(string email)
         {
-            return await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
+            return await _context.Auth.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<List<AllUsers>> GetUsers()
         {
             var users = await appDbContext
-                .Users.Select(user => new AllUsers
+                .Auth.Select(user => new AllUsers
                 {
                     Id = user.Id,
                     Username = user.Username,
                     Email = user.Email,
+                    Roles = user.Roles.ToList(),
                 })
                 .ToListAsync();
             foreach (var user in users)
             {
                 user.Username = user.Username;
                 user.Email = user.Email;
-                Console.WriteLine(user.Username);
             }
             return users;
         }
 
-        public async Task<TheUser> GetUserById(int id)
+        public async Task<AuthGeneralResponse> GetUserById(int id)
         {
             var user = await appDbContext
-                .Users.Select(user => new TheUser
+                .Auth.Select(user => new AuthGeneralResponse
                 {
                     Id = user.Id,
                     Username = user.Username,
                     Email = user.Email,
+                    Roles = user.Roles.ToList(),
                 })
                 .FirstOrDefaultAsync(user => user.Id == id);
             return user;
+        }
+
+        public async Task<Auth> GetByIdAsync(int id)
+        {
+            return await appDbContext.Auth.Include(a => a.User).FirstOrDefaultAsync(a => a.Id == id);
         }
     }
 }

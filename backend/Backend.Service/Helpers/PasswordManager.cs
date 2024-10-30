@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Backend.Core.Models.User;
+using Backend.Core.Models.Auth;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.IdentityModel.Tokens;
 
@@ -55,7 +55,7 @@ namespace Backend.Service.Helpers
             return salt;
         }
 
-        public string GenerateJwtToken(User user, string key)
+        public string GenerateJwtToken(Auth user, string key)
         {
             var claims = new List<Claim>
             {

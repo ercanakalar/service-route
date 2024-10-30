@@ -10,14 +10,18 @@ namespace Backend.Data.UnitOfWorks
         private readonly AppDbContext _appDbContext;
 
         private IUserRepository _userRepository;
+        private ICompanyRepository _companyRepository;
 
         public UnitOfWork(AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
         }
 
-        public IUserRepository Users =>
+        public IUserRepository Auth =>
             _userRepository ??= (IUserRepository)new UserRepository(_appDbContext);
+
+        public ICompanyRepository Companies =>
+            _companyRepository ??= (ICompanyRepository)new CompanyRepository(_appDbContext);
 
         public void Commit()
         {

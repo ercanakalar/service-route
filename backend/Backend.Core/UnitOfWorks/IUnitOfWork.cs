@@ -5,7 +5,8 @@ namespace Backend.Core.UnitOfWorks
 {
     public interface IUnitOfWork
     {
-        IUserRepository Users { get; }
+        IUserRepository Auth { get; }
+        ICompanyRepository Companies { get; }
 
         Task CommitAsync();
         void Commit();

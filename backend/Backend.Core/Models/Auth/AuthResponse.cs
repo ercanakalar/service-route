@@ -1,6 +1,6 @@
-namespace Backend.Core.Models.User
+namespace Backend.Core.Models.Auth
 {
-    public class UserResponse
+    public class AuthResponse
     {
         public int Id { get; set; }
         public string Username { get; set; } = string.Empty;

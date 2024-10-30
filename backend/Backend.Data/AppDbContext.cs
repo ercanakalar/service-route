@@ -1,6 +1,8 @@
 using System.IO;
-using Backend.Core.Models.User;
+using Backend.Core.Models.Auth;
+using Backend.Core.Models.Company;
 using Backend.Core.Models.Jwt;
+using Backend.Core.Models.User;
 using Backend.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -13,11 +15,14 @@ namespace Backend.Data
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<Auth> Auth { get; set; }
+        public DbSet<Company> Companies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new AuthConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanyConfiguration());
         }
     }
 

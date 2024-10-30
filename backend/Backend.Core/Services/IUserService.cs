@@ -1,14 +1,14 @@
-using Backend.Core.Models.User;
+using Backend.Core.Models.Auth;
 
 namespace Backend.Core.Services
 {
     public interface IUserService
     {
-        Task<UserResponse> Signup(SignupRequest request);
-        Task<UserResponse> Signin(SigninRequest request);
+        Task<AuthResponse> CreateUser(SignupRequest request);
+        Task<AuthResponse> Signin(SigninRequest request);
         Task<List<AllUsers>> GetUsers();
-        Task<TheUser> GetUserById(int id);
-        Task<UserResponse> UpdateUser(UpdateUserRequest request);
-        Task<UserResponse> UpdateTheUser(UpdateUserRequest request, int id);
+        Task<AuthGeneralResponse> GetUserById(int id);
+        Task<AuthResponse> UpdateUser(UpdateUserRequest request);
+        Task<AuthResponse> UpdateTheUser(UpdateUserRequest request, int id);
     }
 }

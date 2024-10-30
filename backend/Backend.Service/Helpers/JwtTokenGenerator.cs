@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Backend.Core.Models.Jwt;
-using Backend.Core.Models.User;
+using Backend.Core.Models.Auth;
 using Backend.Core.Repositories;
 using Backend.Core.Services;
 using Microsoft.Extensions.Options;
@@ -26,7 +26,7 @@ namespace Backend.Service.Helpers
             _jwtOptions.ExpiryInDays = _jwtOptions.ExpiryInDays > 0 ? _jwtOptions.ExpiryInDays : 1;
         }
 
-        public string GenerateToken(User applicationUser, IEnumerable<string> roles)
+        public string GenerateToken(Auth applicationUser, IEnumerable<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtOptions.Secret);
@@ -67,7 +67,7 @@ namespace Backend.Service.Helpers
             return tokenHandler.WriteToken(token);
         }
 
-        public string GenerateExpiredToken(User applicationUser, IEnumerable<string> roles)
+        public string GenerateExpiredToken(Auth applicationUser, IEnumerable<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtOptions.Secret);

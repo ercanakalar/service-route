@@ -46,6 +46,7 @@ namespace Backend.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICompanyService, CompanyService>();
 
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
 
@@ -87,18 +88,11 @@ namespace Backend.API
                     }
                 );
 
-            var allowedRoles = new[] { "Admin", "Manager" };
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
                     "ShouldBeAdminOrManager",
-                    policy =>
-                        policy.RequireAssertion(context =>
-                            context.User.HasClaim(c =>
-                                c.Type == ClaimTypes.Role
-                                && allowedRoles.Intersect(c.Value.Split(',')).Any()
-                            )
-                        )
+                    policy => policy.RequireRole("Admin", "Manager")
                 );
             });
 
@@ -150,7 +144,7 @@ namespace Backend.API
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "auth-deneme v1"));
-        app.UseHsts();
+            app.UseHsts();
 
             app.UseHttpsRedirection();
             app.UseRouting();
