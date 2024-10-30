@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import { Button, StyleSheet, View } from 'react-native';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import polyline from '@mapbox/polyline';
 
 import {
@@ -47,7 +47,7 @@ const MapScreen = ({ navigation }: MapScreenProps) => {
         .then((response) => response.json())
         .then((data) => {
           const overviewPolyline = data.routes[0].overview_polyline.points;
-          
+
           data.routes[0].legs.forEach((leg: RouteLeg) => {
             console.log(leg.end_address);
           });

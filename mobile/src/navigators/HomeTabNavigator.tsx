@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeScreen from 'screens/HomeScreen';
 import MapScreen from 'screens/MapScreen';
@@ -14,21 +14,21 @@ const HomeTabNavigator = () => {
     <Tab.Navigator
       initialRouteName='Home'
       screenOptions={({ route }) => ({
-        // tabBarIcon: ({ color, size }) => {
-        //   let iconName = '';
+        tabBarIcon: ({ color, size }) => {
+          let iconName = '';
 
-        //   if (route.name === 'Home') {
-        //     iconName = 'home';
-        //   } else if (route.name === 'Map') {
-        //     iconName = 'map-marker';
-        //   } else if (route.name === 'Chat') {
-        //     iconName = 'chat';
-        //   } else if (route.name === 'Menu') {
-        //     iconName = 'menu';
-        //   }
+          if (route.name === 'Home') {
+            iconName = 'home';
+          } else if (route.name === 'Map') {
+            iconName = 'map-marker';
+          } else if (route.name === 'Chat') {
+            iconName = 'chat';
+          } else if (route.name === 'Menu') {
+            iconName = 'menu';
+          }
 
-        //   return <Icon name={iconName} color={color} size={size} />;
-        // },
+          return <Icon name={iconName} color={color} size={size} />;
+        },
         tabBarActiveTintColor: '#e91e63',
         tabBarInactiveTintColor: '#000000',
         tabBarStyle: {

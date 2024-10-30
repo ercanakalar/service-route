@@ -1,9 +1,10 @@
+import DraggableList from 'components/DraggableList';
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 
 const AddWaypointScreen = ({ navigation }: { navigation: any }) => {
-  const [latitude, setLatitude] = useState('39.945301446178874');
-  const [longitude, setLongitude] = useState('32.77263918817639');
+  const [latitude, setLatitude] = useState('39.957512');
+  const [longitude, setLongitude] = useState('32.789962');
 
   const addWaypoint = () => {
     const lat = parseFloat(latitude);
@@ -21,6 +22,7 @@ const AddWaypointScreen = ({ navigation }: { navigation: any }) => {
   };
   return (
     <View style={styles.container}>
+      <DraggableList />
       <TextInput
         style={styles.input}
         placeholder='Latitude'
