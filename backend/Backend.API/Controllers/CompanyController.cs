@@ -17,12 +17,12 @@ namespace Backend.API.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IAuthService _authService;
         private readonly ICompanyService _companyService;
 
-        public CompanyController(IUserService userService, ICompanyService companyService)
+        public CompanyController(IAuthService authService, ICompanyService companyService)
         {
-            _userService = userService;
+            _authService = authService;
             _companyService = companyService;
         }
 
@@ -33,6 +33,15 @@ namespace Backend.API.Controllers
             var createdCompany = await _companyService.CreateCompany(company);
 
             return Ok(createdCompany);
+        }
+
+        [HttpPut]
+        [Authorize(Policy = "ShouldBeAdminOrManager")]
+        public async Task<IActionResult> UpdateCompany([FromBody] Company company)
+        {
+            var updatedCompany = await _companyService.UpdateCompany(company);
+
+            return Ok(updatedCompany);
         }
     }
 }

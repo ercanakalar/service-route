@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
-using Backend.Core.Models.Auth;
+using Backend.Core.Models.User;
 using Backend.Core.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data.Repositories
 {
-    public class UserRepository : Repository<Auth>, IUserRepository
+    public class UserRepository : Repository<User>, IUserRepository
     {
         public AppDbContext appDbContext
         {
@@ -15,67 +15,18 @@ namespace Backend.Data.Repositories
         public UserRepository(AppDbContext context)
             : base(context) { }
 
-        public async Task<AuthResponse> Signin(SigninRequest signinRequestDto)
+        public async Task<int> GetCompanyIdByUserId(int userId)
         {
-            var user = await appDbContext.Auth.SingleOrDefaultAsync(u =>
-                u.Email == signinRequestDto.Email
-            );
+            var auth = await _context
+                .Auth.Include(a => a.User)
+                .FirstOrDefaultAsync(a => a.Id == userId);
 
-            if (user == null)
+            if (auth == null || auth.User == null)
             {
-                return null;
+                return 0;
             }
 
-            return new AuthResponse
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                Token = "Generated JWT token here",
-            };
-        }
-
-        public async Task<Auth> GetByEmailAsync(string email)
-        {
-            return await _context.Auth.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task<List<AllUsers>> GetUsers()
-        {
-            var users = await appDbContext
-                .Auth.Select(user => new AllUsers
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    Email = user.Email,
-                    Roles = user.Roles.ToList(),
-                })
-                .ToListAsync();
-            foreach (var user in users)
-            {
-                user.Username = user.Username;
-                user.Email = user.Email;
-            }
-            return users;
-        }
-
-        public async Task<AuthGeneralResponse> GetUserById(int id)
-        {
-            var user = await appDbContext
-                .Auth.Select(user => new AuthGeneralResponse
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    Email = user.Email,
-                    Roles = user.Roles.ToList(),
-                })
-                .FirstOrDefaultAsync(user => user.Id == id);
-            return user;
-        }
-
-        public async Task<Auth> GetByIdAsync(int id)
-        {
-            return await appDbContext.Auth.Include(a => a.User).FirstOrDefaultAsync(a => a.Id == id);
+            return auth.User.CompanyId ?? 0;
         }
     }
 }

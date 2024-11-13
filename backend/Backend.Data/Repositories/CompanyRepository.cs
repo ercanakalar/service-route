@@ -21,5 +21,15 @@ namespace Backend.Data.Repositories
                 .Companies.AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public async Task<Company> GetByNameAsync(string name)
+        {
+            return await _context.Companies.AsNoTracking().FirstOrDefaultAsync(u => u.Name == name);
+        }
+
+        public async Task<Company> GetByIdAsync(int id)
+        {
+            return await _context.Companies.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+        }
     }
 }

@@ -14,5 +14,8 @@ namespace Backend.Core.Models.User
 
         public int? CompanyId { get; set; }
         public Backend.Core.Models.Company.Company Company { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

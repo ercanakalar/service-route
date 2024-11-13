@@ -14,13 +14,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.Service.Services
 {
-    public class UserService : IUserService
+    public class AuthService : IAuthService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly JwtTokenGenerator _tokenService;
         private readonly PasswordManager _passwordManager;
 
-        public UserService(
+        public AuthService(
             IUnitOfWork unitOfWork,
             JwtTokenGenerator tokenService,
             PasswordManager passwordManager
@@ -53,12 +53,11 @@ namespace Backend.Service.Services
                 Password = hashedPassword,
                 ConfirmPassword = hashedConfirmPassword,
                 Roles = request.Roles ?? new List<string> { "User" },
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
             };
 
-            var user = new User
-            {
-                Auth = auth
-            };
+            var user = new User { Auth = auth };
 
             auth.User = user;
 
@@ -151,7 +150,8 @@ namespace Backend.Service.Services
 
         public async Task<AuthResponse> UpdateUser(UpdateUserRequest request)
         {
-            var existUser = await _unitOfWork.Auth.GetByIdAsync(request.Id);
+            Console.WriteLine(request.UserId);
+            var existUser = await _unitOfWork.Auth.GetByIdAsync(request.UserId);
             if (existUser == null)
             {
                 return new AuthResponse
@@ -174,15 +174,51 @@ namespace Backend.Service.Services
 
             if (request.CompanyId != null)
             {
+                var company = await _unitOfWork.Companies.GetByIdAsync(request.CompanyId);
+                if (company == null)
+                {
+                    return new AuthResponse
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = "Invalid CompanyId",
+                        StatusCode = 400,
+                    };
+                }
                 existUser.User.CompanyId = request.CompanyId;
             }
 
-            existUser.Username = request.Username;
-            existUser.Email = request.Email;
-            existUser.Roles = request.Roles ?? existUser.Roles;
-            existUser.Password = _passwordManager.HashPassword(request.Password);
+            var isThereUserName = await _unitOfWork.Auth.GetByUsernameAsync(request.Username);
+            if (isThereUserName != null && isThereUserName.Id != request.UserId)
+            {
+                return new AuthResponse
+                {
+                    IsSuccess = false,
+                    ErrorMessage = "Username already exists",
+                    StatusCode = 409,
+                };
+            }
+            existUser.Username = string.IsNullOrEmpty(request.Username)
+                ? existUser.Username
+                : request.Username;
+
+            var isThereEmail = await _unitOfWork.Auth.GetByEmailAsync(request.Email);
+            if (isThereEmail != null && isThereEmail.Id != request.UserId)
+            {
+                return new AuthResponse
+                {
+                    IsSuccess = false,
+                    ErrorMessage = "Email already exists",
+                    StatusCode = 409,
+                };
+            }
+            existUser.Email = string.IsNullOrEmpty(request.Email) ? existUser.Email : request.Email;
+            existUser.Roles =
+                (request.Roles != null && request.Roles.Count > 0)
+                    ? request.Roles
+                    : existUser.Roles;
             existUser.ConfirmPassword =
                 request.Password ?? _passwordManager.HashPassword(request.Password);
+            existUser.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.Auth.Update(existUser);
 
@@ -240,6 +276,7 @@ namespace Backend.Service.Services
             user.Password = _passwordManager.HashPassword(request.Password);
             user.ConfirmPassword =
                 request.Password ?? _passwordManager.HashPassword(request.Password);
+            user.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.Auth.Update(user);
             await _unitOfWork.CommitAsync();

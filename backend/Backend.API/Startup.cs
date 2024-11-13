@@ -45,8 +45,9 @@ namespace Backend.API
             services.AddScoped(typeof(IService<>), typeof(Service.Services.Service<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<IMapService, MapService>();
 
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
 

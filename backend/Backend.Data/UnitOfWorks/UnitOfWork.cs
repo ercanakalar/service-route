@@ -9,19 +9,23 @@ namespace Backend.Data.UnitOfWorks
     {
         private readonly AppDbContext _appDbContext;
 
-        private IUserRepository _userRepository;
+        private IAuthRepository _userRepository;
         private ICompanyRepository _companyRepository;
+        private IMapRepository _mapRepository;
 
         public UnitOfWork(AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
         }
 
-        public IUserRepository Auth =>
-            _userRepository ??= (IUserRepository)new UserRepository(_appDbContext);
+        public IAuthRepository Auth =>
+            _userRepository ??= (IAuthRepository)new AuthRepository(_appDbContext);
 
         public ICompanyRepository Companies =>
             _companyRepository ??= (ICompanyRepository)new CompanyRepository(_appDbContext);
+
+        public IMapRepository Waypoints =>
+            _mapRepository ??= (IMapRepository)new MapRepository(_appDbContext);
 
         public void Commit()
         {

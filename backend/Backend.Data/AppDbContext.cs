@@ -2,6 +2,7 @@ using System.IO;
 using Backend.Core.Models.Auth;
 using Backend.Core.Models.Company;
 using Backend.Core.Models.Jwt;
+using Backend.Core.Models.Map;
 using Backend.Core.Models.User;
 using Backend.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +18,14 @@ namespace Backend.Data
 
         public DbSet<Auth> Auth { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<Waypoints> Waypoints { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new AuthConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
+            modelBuilder.ApplyConfiguration(new MapConfiguration());
         }
     }
 

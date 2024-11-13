@@ -40,7 +40,9 @@ namespace Backend.Core.Models.Company
 
         public string? Notes { get; set; }
 
-        public List<Backend.Core.Models.User.User> User { get; set; } =
-            new List<Backend.Core.Models.User.User>();
+        public string? CompanySecret { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

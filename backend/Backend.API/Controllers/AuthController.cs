@@ -14,13 +14,13 @@ namespace Backend.API.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class AuthController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public UserController(IUserService userService)
+        public AuthController(IAuthService authService)
         {
-            _userService = userService;
+            _authService = authService;
         }
 
         [HttpPost("signup")]
@@ -31,7 +31,7 @@ namespace Backend.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var newUser = await _userService.CreateUser(request);
+            var newUser = await _authService.CreateUser(request);
             if (newUser.IsSuccess == false)
             {
                 return BadRequest(newUser);
@@ -51,7 +51,7 @@ namespace Backend.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await _userService.Signin(request);
+            var user = await _authService.Signin(request);
             if (user.IsSuccess == false)
             {
                 return BadRequest(user);
@@ -78,7 +78,7 @@ namespace Backend.API.Controllers
         [Authorize(Policy = "ShouldBeAdminOrManager")]
         public async Task<IActionResult> GetUsers()
         {
-            var users = await _userService.GetUsers();
+            var users = await _authService.GetUsers();
             return Ok(users);
         }
 
@@ -86,7 +86,7 @@ namespace Backend.API.Controllers
         [Authorize(Policy = "ShouldBeAdminOrManager")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await _userService.GetUserById(id);
+            var user = await _authService.GetUserById(id);
             return Ok(user);
         }
 
@@ -99,7 +99,7 @@ namespace Backend.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await _userService.UpdateUser(request);
+            var user = await _authService.UpdateUser(request);
             if (user.IsSuccess == false)
             {
                 return BadRequest(user);
@@ -122,14 +122,17 @@ namespace Backend.API.Controllers
 
             if (currentUserId != id && !currentUserRoles.Contains("Admin"))
             {
-                return new ObjectResult(new {
-                    IsSuccess = false,
-                    ErrorMessage = "You are not authorized to update this user",
-                    StatusCode = 403,
-                });
+                return new ObjectResult(
+                    new
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = "You are not authorized to update this user",
+                        StatusCode = 403,
+                    }
+                );
             }
 
-            var user = await _userService.UpdateTheUser(request, id);
+            var user = await _authService.UpdateTheUser(request, id);
             if (user.IsSuccess == false)
             {
                 return BadRequest(user);

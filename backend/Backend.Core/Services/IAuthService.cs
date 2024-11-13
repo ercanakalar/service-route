@@ -2,7 +2,7 @@ using Backend.Core.Models.Auth;
 
 namespace Backend.Core.Services
 {
-    public interface IUserService
+    public interface IAuthService
     {
         Task<AuthResponse> CreateUser(SignupRequest request);
         Task<AuthResponse> Signin(SigninRequest request);

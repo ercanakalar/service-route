@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241030110055_InitialCreate")]
+    [Migration("20241031130336_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -43,6 +43,9 @@ namespace Backend.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -60,6 +63,9 @@ namespace Backend.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("text[]");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -90,10 +96,16 @@ namespace Backend.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("CompanySecret")
+                        .HasColumnType("text");
+
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -120,6 +132,9 @@ namespace Backend.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Website")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
@@ -131,6 +146,45 @@ namespace Backend.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies", (string)null);
+                });
+
+            modelBuilder.Entity("Backend.Core.Models.Map.Waypoints", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("Id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Latitude")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Longitude")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Waypoints", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Core.Models.User.User", b =>
@@ -147,6 +201,12 @@ namespace Backend.Data.Migrations
                     b.Property<int?>("CompanyId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuthId")
@@ -155,6 +215,15 @@ namespace Backend.Data.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("Backend.Core.Models.Map.Waypoints", b =>
+                {
+                    b.HasOne("Backend.Core.Models.Company.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("Backend.Core.Models.User.User", b =>
@@ -166,7 +235,7 @@ namespace Backend.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Backend.Core.Models.Company.Company", "Company")
-                        .WithMany("User")
+                        .WithMany()
                         .HasForeignKey("CompanyId");
 
                     b.Navigation("Auth");
@@ -178,11 +247,6 @@ namespace Backend.Data.Migrations
                 {
                     b.Navigation("User")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Backend.Core.Models.Company.Company", b =>
-                {
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

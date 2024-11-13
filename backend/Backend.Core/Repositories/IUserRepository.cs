@@ -1,13 +1,9 @@
 using System.Threading.Tasks;
-using Backend.Core.Models.Auth;
+using Backend.Core.Models.User;
 
 namespace Backend.Core.Repositories
 {
-    public interface IUserRepository: IRepository<Auth>
-    {
-        Task<AuthResponse> Signin(SigninRequest request);
-        Task<Auth> GetByEmailAsync(string email);
-        Task<List<AllUsers>> GetUsers();
-        Task<AuthGeneralResponse> GetUserById(int id);
+    public interface IUserRepository : IRepository<User> {
+        Task<int> GetCompanyIdByUserId(int userId);
     }
 }
