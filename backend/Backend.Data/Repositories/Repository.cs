@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Backend.Core.Models.Auth;
 using Backend.Core.Repositories;
 using Backend.Data.Extensions;
 using Microsoft.EntityFrameworkCore;

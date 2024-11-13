@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data.Repositories
 {
-    public class AuthRepository : Repository<Auth>, IAuthRepository
+    public class AuthRepository : Repository<AuthDto>, IAuthRepository
     {
         public AppDbContext appDbContext
         {
@@ -35,7 +35,7 @@ namespace Backend.Data.Repositories
             };
         }
 
-        public async Task<Auth> GetByEmailAsync(string email)
+        public async Task<AuthDto> GetByEmailAsync(string email)
         {
             return await _context.Auth.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
         }
@@ -73,19 +73,19 @@ namespace Backend.Data.Repositories
             return user;
         }
 
-        public async Task<Auth> GetByIdAsync(int id)
+        public async Task<AuthDto> GetByIdAsync(int id)
         {
             return await appDbContext
-                .Auth.Include(a => a.User)
+                .Auth.Include(a => a.Users)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<int> GetCompanyIdByUserId(int userId)
         {
             var user = await appDbContext
-                .Auth.Include(a => a.User)
+                .Auth.Include(a => a.Users)
                 .FirstOrDefaultAsync(a => a.Id == userId);
-            return user.User.CompanyId ?? 0;
+            return user.Users.CompanyId ?? 0;
         }
     }
 }

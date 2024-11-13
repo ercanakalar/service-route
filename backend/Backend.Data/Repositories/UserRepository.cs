@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data.Repositories
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : Repository<UserDto>, IUserRepository
     {
         public AppDbContext appDbContext
         {
@@ -18,15 +18,15 @@ namespace Backend.Data.Repositories
         public async Task<int> GetCompanyIdByUserId(int userId)
         {
             var auth = await _context
-                .Auth.Include(a => a.User)
+                .Auth.Include(a => a.Users)
                 .FirstOrDefaultAsync(a => a.Id == userId);
 
-            if (auth == null || auth.User == null)
+            if (auth == null || auth.Users == null)
             {
                 return 0;
             }
 
-            return auth.User.CompanyId ?? 0;
+            return auth.Users.CompanyId ?? 0;
         }
     }
 }

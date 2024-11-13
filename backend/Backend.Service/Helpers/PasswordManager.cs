@@ -55,7 +55,7 @@ namespace Backend.Service.Helpers
             return salt;
         }
 
-        public string GenerateJwtToken(Auth user, string key)
+        public string GenerateJwtToken(AuthDto user, string key)
         {
             var claims = new List<Claim>
             {

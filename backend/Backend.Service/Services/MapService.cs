@@ -45,7 +45,7 @@ namespace Backend.Service.Services
 
             var companyId = await _unitOfWork.Auth.GetCompanyIdByUserId(userId);
 
-            var map = new Waypoints
+            var map = new WaypointsDto
             {
                 Address = request.Address,
                 Latitude = request.Latitude,
@@ -63,7 +63,7 @@ namespace Backend.Service.Services
             {
                 IsSuccess = true,
                 StatusCode = 200,
-                Waypoints = new List<Waypoints> { map },
+                Waypoints = new List<WaypointsDto> { map },
             };
         }
 

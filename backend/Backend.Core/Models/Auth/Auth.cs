@@ -5,7 +5,7 @@ using Backend.Core.Models.User;
 
 namespace Backend.Core.Models.Auth
 {
-    public class Auth
+    public class AuthDto
     {
         [Key]
         public int Id { get; set; }
@@ -30,7 +30,7 @@ namespace Backend.Core.Models.Auth
         public string? AccessToken { get; set; }
         public string? RefreshToken { get; set; }
 
-        public Backend.Core.Models.User.User User { get; set; }
+        public Backend.Core.Models.User.UserDto Users { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

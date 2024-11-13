@@ -46,7 +46,7 @@ namespace Backend.Service.Services
 
             var hashedPassword = _passwordManager.HashPassword(request.Password);
             var hashedConfirmPassword = _passwordManager.HashPassword(request.Password);
-            var auth = new Auth
+            var auth = new AuthDto
             {
                 Username = request.Username,
                 Email = request.Email,
@@ -57,9 +57,9 @@ namespace Backend.Service.Services
                 UpdatedAt = DateTime.UtcNow,
             };
 
-            var user = new User { Auth = auth };
+            var user = new UserDto { Auth = auth };
 
-            auth.User = user;
+            auth.Users = user;
 
             await _unitOfWork.Auth.AddAsync(auth);
             await _unitOfWork.CommitAsync();
@@ -162,7 +162,7 @@ namespace Backend.Service.Services
                 };
             }
 
-            if (existUser.User == null)
+            if (existUser.Users == null)
             {
                 return new AuthResponse
                 {
@@ -184,7 +184,7 @@ namespace Backend.Service.Services
                         StatusCode = 400,
                     };
                 }
-                existUser.User.CompanyId = request.CompanyId;
+                existUser.Users.CompanyId = request.CompanyId;
             }
 
             var isThereUserName = await _unitOfWork.Auth.GetByUsernameAsync(request.Username);
@@ -250,7 +250,7 @@ namespace Backend.Service.Services
             }
 
             var isThereUserName = await _unitOfWork.Auth.GetByUsernameAsync(request.Username);
-            if (isThereUserName != null)
+            if (isThereUserName != null && user.Username != request.Username)
             {
                 return new AuthResponse
                 {

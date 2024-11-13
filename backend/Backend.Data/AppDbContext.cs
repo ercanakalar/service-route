@@ -16,9 +16,9 @@ namespace Backend.Data
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
-        public DbSet<Auth> Auth { get; set; }
-        public DbSet<Company> Companies { get; set; }
-        public DbSet<Waypoints> Waypoints { get; set; }
+        public DbSet<AuthDto> Auth { get; set; }
+        public DbSet<CompanyDto> Companies { get; set; }
+        public DbSet<WaypointsDto> Waypoints { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

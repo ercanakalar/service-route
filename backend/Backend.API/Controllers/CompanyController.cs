@@ -28,7 +28,7 @@ namespace Backend.API.Controllers
 
         [HttpPost]
         [Authorize(Policy = "ShouldBeAdminOrManager")]
-        public async Task<IActionResult> CreateCompany([FromBody] Company company)
+        public async Task<IActionResult> CreateCompany([FromBody] CompanyDto company)
         {
             var createdCompany = await _companyService.CreateCompany(company);
 
@@ -37,7 +37,7 @@ namespace Backend.API.Controllers
 
         [HttpPut]
         [Authorize(Policy = "ShouldBeAdminOrManager")]
-        public async Task<IActionResult> UpdateCompany([FromBody] Company company)
+        public async Task<IActionResult> UpdateCompany([FromBody] CompanyDto company)
         {
             var updatedCompany = await _companyService.UpdateCompany(company);
 

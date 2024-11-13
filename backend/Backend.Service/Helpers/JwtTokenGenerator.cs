@@ -26,7 +26,7 @@ namespace Backend.Service.Helpers
             _jwtOptions.ExpiryInDays = _jwtOptions.ExpiryInDays > 0 ? _jwtOptions.ExpiryInDays : 1;
         }
 
-        public string GenerateToken(Auth applicationUser, IEnumerable<string> roles)
+        public string GenerateToken(AuthDto applicationUser, IEnumerable<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtOptions.Secret);
@@ -67,7 +67,7 @@ namespace Backend.Service.Helpers
             return tokenHandler.WriteToken(token);
         }
 
-        public string GenerateExpiredToken(Auth applicationUser, IEnumerable<string> roles)
+        public string GenerateExpiredToken(AuthDto applicationUser, IEnumerable<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtOptions.Secret);

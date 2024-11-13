@@ -8,14 +8,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Data.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<UserDto>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<UserDto> builder)
         {
             builder.HasKey(u => u.Id);
-            builder.ToTable("User");
+            builder.ToTable("Users");
 
-            builder.HasOne(u => u.Auth).WithOne(a => a.User).HasForeignKey<User>(u => u.AuthId);
+            builder.HasOne(u => u.Auth).WithOne(a => a.Users).HasForeignKey<UserDto>(u => u.AuthId);
         }
     }
 }

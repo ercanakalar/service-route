@@ -3,10 +3,10 @@ using Backend.Core.Models.Company;
 
 namespace Backend.Core.Repositories
 {
-    public interface ICompanyRepository : IRepository<Company>
+    public interface ICompanyRepository : IRepository<CompanyDto>
     {
-        Task<Company> GetByEmailAsync(string email);
-        Task<Company> GetByNameAsync(string name);
-        Task<Company> GetByIdAsync(int id);
+        Task<CompanyDto> GetByEmailAsync(string email);
+        Task<CompanyDto> GetByNameAsync(string name);
+        Task<CompanyDto> GetByIdAsync(int id);
     }
 }

@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241031130336_InitialCreate")]
+    [Migration("20241113154646_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,7 +26,7 @@ namespace Backend.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Backend.Core.Models.Auth.Auth", b =>
+            modelBuilder.Entity("Backend.Core.Models.Auth.AuthDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -77,7 +77,7 @@ namespace Backend.Data.Migrations
                     b.ToTable("Auth", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Core.Models.Company.Company", b =>
+            modelBuilder.Entity("Backend.Core.Models.Company.CompanyDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,7 +148,7 @@ namespace Backend.Data.Migrations
                     b.ToTable("Companies", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Core.Models.Map.Waypoints", b =>
+            modelBuilder.Entity("Backend.Core.Models.Map.WaypointsDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,7 +162,7 @@ namespace Backend.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
@@ -187,7 +187,7 @@ namespace Backend.Data.Migrations
                     b.ToTable("Waypoints", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Core.Models.User.User", b =>
+            modelBuilder.Entity("Backend.Core.Models.User.UserDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -214,27 +214,29 @@ namespace Backend.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Core.Models.Map.Waypoints", b =>
+            modelBuilder.Entity("Backend.Core.Models.Map.WaypointsDto", b =>
                 {
-                    b.HasOne("Backend.Core.Models.Company.Company", "Company")
+                    b.HasOne("Backend.Core.Models.Company.CompanyDto", "Company")
                         .WithMany()
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("Backend.Core.Models.User.User", b =>
+            modelBuilder.Entity("Backend.Core.Models.User.UserDto", b =>
                 {
-                    b.HasOne("Backend.Core.Models.Auth.Auth", "Auth")
-                        .WithOne("User")
-                        .HasForeignKey("Backend.Core.Models.User.User", "AuthId")
+                    b.HasOne("Backend.Core.Models.Auth.AuthDto", "Auth")
+                        .WithOne("Users")
+                        .HasForeignKey("Backend.Core.Models.User.UserDto", "AuthId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend.Core.Models.Company.Company", "Company")
+                    b.HasOne("Backend.Core.Models.Company.CompanyDto", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId");
 
@@ -243,9 +245,9 @@ namespace Backend.Data.Migrations
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("Backend.Core.Models.Auth.Auth", b =>
+            modelBuilder.Entity("Backend.Core.Models.Auth.AuthDto", b =>
                 {
-                    b.Navigation("User")
+                    b.Navigation("Users")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Data.Configurations
 {
-    public class MapConfiguration : IEntityTypeConfiguration<Waypoints>
+    public class MapConfiguration : IEntityTypeConfiguration<WaypointsDto>
     {
-        public void Configure(EntityTypeBuilder<Waypoints> builder)
+        public void Configure(EntityTypeBuilder<WaypointsDto> builder)
         {
             builder.HasKey(k => k.Id);
             builder.Property(m => m.Id).HasColumnName("Id");

@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Data.Configurations
 {
-    public class AuthConfiguration : IEntityTypeConfiguration<Auth>
+    public class AuthConfiguration : IEntityTypeConfiguration<AuthDto>
     {
-        public void Configure(EntityTypeBuilder<Auth> builder)
+        public void Configure(EntityTypeBuilder<AuthDto> builder)
         {
             builder.HasKey(k => k.Id);
             builder.Property(m => m.Id).HasColumnName("Id");
@@ -21,7 +21,7 @@ namespace Backend.Data.Configurations
             builder.Property(m => m.Roles).HasMaxLength(100);
             builder.ToTable("Auth");
 
-            builder.HasOne(a => a.User).WithOne(u => u.Auth).HasForeignKey<User>(u => u.AuthId);
+            builder.HasOne(a => a.Users).WithOne(u => u.Auth).HasForeignKey<UserDto>(u => u.AuthId);
         }
     }
 }

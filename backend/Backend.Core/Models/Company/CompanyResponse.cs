@@ -8,6 +8,6 @@ namespace Backend.Core.Models.Company
         public bool IsSuccess { get; set; } = true;
         public string ErrorMessage { get; set; }
         public int StatusCode { get; set; } = 200;
-        public Company? Company { get; set; }
+        public CompanyDto? Company { get; set; }
     }
 }

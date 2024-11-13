@@ -9,6 +9,6 @@ namespace Backend.Core.Models.Map
         public bool IsSuccess { get; set; } = true;
         public string ErrorMessage { get; set; }
         public int StatusCode { get; set; } = 200;
-        public List<Waypoints> Waypoints { get; set; } = new List<Waypoints>();
+        public List<WaypointsDto> Waypoints { get; set; } = new List<WaypointsDto>();
     }
 }

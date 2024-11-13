@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data.Repositories
 {
-    public class MapRepository : Repository<Waypoints>, IMapRepository
+    public class MapRepository : Repository<WaypointsDto>, IMapRepository
     {
         public AppDbContext appDbContext
         {
@@ -15,7 +15,7 @@ namespace Backend.Data.Repositories
         public MapRepository(AppDbContext context)
             : base(context) { }
 
-        public async Task<List<Waypoints>> GetWaypointsByCompanyId(int companyId)
+        public async Task<List<WaypointsDto>> GetWaypointsByCompanyId(int companyId)
         {
             return await _context.Waypoints.Where(x => x.CompanyId == companyId).ToListAsync();
         }

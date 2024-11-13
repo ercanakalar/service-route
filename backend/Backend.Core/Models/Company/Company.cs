@@ -4,7 +4,7 @@ using Backend.Core.Models.User;
 
 namespace Backend.Core.Models.Company
 {
-    public class Company
+    public class CompanyDto
     {
         [Key]
         public int Id { get; set; }

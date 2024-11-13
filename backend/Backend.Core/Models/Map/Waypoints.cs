@@ -4,7 +4,7 @@ using Backend.Core.Models.Company;
 
 namespace Backend.Core.Models.Map
 {
-    public class Waypoints
+    public class WaypointsDto
     {
         [Key]
         public int Id { get; set; }
@@ -22,7 +22,7 @@ namespace Backend.Core.Models.Map
         public int Order { get; set; }
 
         public int CompanyId { get; set; }
-        public Backend.Core.Models.Company.Company Company { get; set; }
+        public Backend.Core.Models.Company.CompanyDto Company { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

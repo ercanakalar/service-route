@@ -30,7 +30,7 @@ namespace Backend.Service.Services
             _passwordManager = passwordManager;
         }
 
-        public async Task<CompanyResponse> CreateCompany(Company request)
+        public async Task<CompanyResponse> CreateCompany(CompanyDto request)
         {
             var existingCompany = await _unitOfWork.Companies.GetByEmailAsync(request.Email);
 
@@ -44,7 +44,7 @@ namespace Backend.Service.Services
                 };
             }
 
-            var company = new Company
+            var company = new CompanyDto
             {
                 Name = request.Name,
                 Address = request.Address,
@@ -73,7 +73,7 @@ namespace Backend.Service.Services
             };
         }
 
-        public async Task<CompanyResponse> UpdateCompany(Company request)
+        public async Task<CompanyResponse> UpdateCompany(CompanyDto request)
         {
             var existingCompany = await _unitOfWork.Companies.GetByEmailAsync(request.Email);
 

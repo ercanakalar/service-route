@@ -3,8 +3,8 @@ using Backend.Core.Models.Map;
 
 namespace Backend.Core.Repositories
 {
-    public interface IMapRepository : IRepository<Waypoints>
+    public interface IMapRepository : IRepository<WaypointsDto>
     {
-        Task<List<Waypoints>> GetWaypointsByCompanyId(int companyId);
+        Task<List<WaypointsDto>> GetWaypointsByCompanyId(int companyId);
     }
 }
