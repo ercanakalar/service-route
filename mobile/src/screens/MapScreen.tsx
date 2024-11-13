@@ -9,20 +9,17 @@ import {
   RouteCoordinate,
   Waypoint,
 } from 'types/map-screen-type';
-import { RouteLeg } from 'types/map';
+import { MapState, RouteLeg } from 'types/map';
+import { useAppDispatch, useAppSelector } from 'store/hook';
+import { addWaypoint } from 'store/slices/mapSlice';
 
 const MapScreen = ({ navigation }: MapScreenProps) => {
+  const dispatch = useAppDispatch();
+  const waypoints = useAppSelector((state: { map: MapState }) => state.map.wayPoints);
+
   const [routeCoordinates, setRouteCoordinates] = useState<RouteCoordinate[]>([]);
-  const [waypoints, setWaypoints] = useState<Waypoint[]>([
-    { latitude: 39.9373193, longitude: 32.8775523 },
-    { latitude: 39.9283269, longitude: 32.8654476 },
-    { latitude: 39.9409097, longitude: 32.8377803 },
-    { latitude: 39.9582303, longitude: 32.8172487 },
-    { latitude: 39.9620885, longitude: 32.8110612 },
-    { latitude: 39.9569244, longitude: 32.7950965 },
-    { latitude: 39.945225, longitude: 32.7375667 },
-    { latitude: 39.9795356, longitude: 32.65884 },
-  ]);
+  const [clickedLocation, setClickedLocation] = useState<{ latitude: number, longitude: number } | null>(null);
+
 
   const destination = { latitude: 40.0689064, longitude: 32.5902646 };
 
@@ -48,9 +45,9 @@ const MapScreen = ({ navigation }: MapScreenProps) => {
         .then((data) => {
           const overviewPolyline = data.routes[0].overview_polyline.points;
 
-          data.routes[0].legs.forEach((leg: RouteLeg) => {
-            console.log(leg.end_address);
-          });
+          // data.routes[0].legs.forEach((leg: RouteLeg) => {
+          //   console.log(leg.end_address);
+          // });
 
           const decodedPoints = decodePolyline(overviewPolyline);
           setRouteCoordinates(decodedPoints);
@@ -64,21 +61,51 @@ const MapScreen = ({ navigation }: MapScreenProps) => {
     fetchRoute();
   }, [waypoints]);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      const state = navigation.getState();
-      const routeWithWaypoint = state.routes.find(
-        (route: Route) => route.params?.newWaypoint
-      ) as Route | undefined;
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     const state = navigation.getState();
+  //     const routeWithWaypoint = state.routes.find(
+  //       (route: Route) => route.params?.newWaypoint
+  //     ) as Route | undefined;
 
-      if (routeWithWaypoint && routeWithWaypoint.params?.newWaypoint) {
-        const newWaypoint = routeWithWaypoint.params.newWaypoint as Waypoint;
-        setWaypoints((prevWaypoints) => [...prevWaypoints, newWaypoint]);
-      }
-    });
+  //     if (routeWithWaypoint && routeWithWaypoint.params?.newWaypoint) {
+  //       const newWaypoint = routeWithWaypoint.params.newWaypoint as Waypoint;
+  //       setWaypoints((prevWaypoints) => [...prevWaypoints, newWaypoint]);
+  //     }
+  //   });
 
-    return unsubscribe;
-  }, [navigation]);
+  //   return unsubscribe;
+  // }, [navigation]);
+
+  const handleMapPress = (event: any) => {
+
+    const { coordinate } = event.nativeEvent;
+    setClickedLocation(coordinate);
+    console.log('Clicked location:', coordinate);
+
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${coordinate.latitude},${coordinate.longitude}&destination=${coordinate.latitude},${coordinate.longitude}&waypoints=${coordinate.latitude},${coordinate.longitude}&key=${process.env.REACT_APP_MAP_API}`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        const overviewPolyline = data.routes[0].overview_polyline.points;
+
+        const address = data.routes[0].legs.map((leg: RouteLeg) => {
+          return leg.end_address;
+        });
+        if (address.length === 0) {
+          address.push('No address found');
+        }
+        console.log(address);
+
+        const newWaypoint = { id: waypoints.length + 1, latitude: coordinate.latitude, longitude: coordinate.longitude, address: address[0] };
+        console.log(newWaypoint);
+
+        dispatch(addWaypoint(newWaypoint));
+        const decodedPoints = decodePolyline(overviewPolyline);
+        setRouteCoordinates(decodedPoints);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -90,12 +117,13 @@ const MapScreen = ({ navigation }: MapScreenProps) => {
           latitudeDelta: 0.1,
           longitudeDelta: 0.1,
         }}
+        onPress={handleMapPress}
       >
         {Array.isArray(waypoints) && waypoints.length > 0 && waypoints.map((waypoint: Waypoint, index) => (
           <Marker
             key={`Waypoint ${index + 1}`}
             coordinate={waypoint}
-            title={`Waypoint ${index + 1}`}
+            title={waypoint.address}
           />
         ))}
 

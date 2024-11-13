@@ -1,4 +1,8 @@
 import { combineReducers } from 'redux';
 
-const rootReducers = {};
+import mapReducer from './slices/mapSlice';
+
+const rootReducers = {
+  map: mapReducer,
+};
 export default combineReducers(rootReducers);

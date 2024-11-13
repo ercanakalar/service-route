@@ -15,8 +15,11 @@ export type MapScreenProps = {
 };
 
 export type Waypoint = {
+  id: number;
   latitude: number;
   longitude: number;
+  address: string;
+  order: number;
 };
 
 export type RouteCoordinate = {

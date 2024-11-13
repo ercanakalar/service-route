@@ -1,3 +1,5 @@
+import { Waypoint } from './map-screen-type';
+
 type MapLocation = {
   lat: number;
   lng: number;
@@ -17,4 +19,13 @@ export type RouteLeg = {
   start_location: MapLocation;
   traffic_speed_entry: any[];
   via_waypoint: any[];
+};
+
+export type MapState = {
+  wayPoints: Waypoint[];
+  isLoading: boolean;
+  state: string;
+  user: any;
+  error: any;
+  errors: any;
 };
