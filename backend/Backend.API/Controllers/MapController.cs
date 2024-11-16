@@ -9,6 +9,7 @@ using Backend.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.API.Controllers
@@ -17,11 +18,19 @@ namespace Backend.API.Controllers
     [ApiController]
     public class MapController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
         private readonly IMapService _mapService;
+        private readonly ExternalApiService _externalApiService;
 
-        public MapController(IMapService mapService)
+        public MapController(
+            IConfiguration configuration,
+            IMapService mapService,
+            ExternalApiService externalApiService
+        )
         {
+            _configuration = configuration;
             _mapService = mapService;
+            _externalApiService = externalApiService;
         }
 
         [HttpPost]
@@ -48,12 +57,32 @@ namespace Backend.API.Controllers
         {
             var waypoints = await _mapService.GetWaypointsAsAdmin();
 
-            if (waypoints == null)
+            if (waypoints == null || waypoints.Waypoints == null || !waypoints.Waypoints.Any())
             {
-                return BadRequest(waypoints);
+                return BadRequest("Waypoints data is empty or null.");
             }
 
-            return Ok(waypoints);
+            var sortedWaypoints = waypoints.Waypoints.OrderBy(wp => wp.Order).ToList();
+
+            var origin = sortedWaypoints.First();
+            var destination = sortedWaypoints.Last();
+
+            var waypointsString = string.Join(
+                "|",
+                sortedWaypoints
+                    .Skip(1)
+                    .Take(sortedWaypoints.Count - 2)
+                    .Select(wp => $"{wp.Latitude},{wp.Longitude}")
+            );
+
+            var apiKey = _configuration["Map:MapApiKey"];
+
+            var url =
+                $"https://maps.googleapis.com/maps/api/directions/json?origin={origin.Latitude},{origin.Longitude}&destination={destination.Latitude},{destination.Longitude}&waypoints={waypointsString}&key={apiKey}";
+
+            var data = await _externalApiService.FetchDataAsync(url);
+
+            return Ok(data);
         }
 
         [HttpGet("user")]

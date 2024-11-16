@@ -113,6 +113,7 @@ namespace Backend.API
             });
 
             services.AddControllers();
+            services.AddHttpClient<ExternalApiService>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
