@@ -1,13 +1,22 @@
-import { Text } from 'react-native';
 import React from 'react';
-import Container from 'components/Container';
+import { View, Button, StyleSheet } from 'react-native';
 
-const MenuScreen = () => {
+import { NavigationProp } from '@react-navigation/native';
+
+const MenuScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
   return (
-    <Container>
-      <Text>MenuScreen</Text>
-    </Container>
+    <View style={styles.container}>
+      <Button title="Profile" onPress={() => navigation.navigate('Profile')} />
+      <Button title="Settings" onPress={() => navigation.navigate('Settings')} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+});
 
 export default MenuScreen;

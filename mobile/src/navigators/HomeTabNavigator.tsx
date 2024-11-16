@@ -6,6 +6,7 @@ import HomeScreen from 'screens/HomeScreen';
 import MapScreen from 'screens/MapScreen';
 import ChatScreen from 'screens/ChatScreen';
 import MenuScreen from 'screens/MenuScreen';
+import { Button, Text, View } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
@@ -63,7 +64,23 @@ const HomeTabNavigator = () => {
       <Tab.Screen
         name='Menu'
         component={MenuScreen}
-        options={{ tabBarLabel: 'Menü' }}
+        options={{
+          headerShown: true,
+          header: () => (
+            <View
+              style={{
+                backgroundColor: 'gray',
+                padding: 15,
+                paddingTop: 50,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ fontSize: 20, color: 'white' }}>Settings</Text>
+            </View>
+          ),
+        }}
       />
     </Tab.Navigator>
   );
