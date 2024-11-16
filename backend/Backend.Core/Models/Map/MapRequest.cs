@@ -9,14 +9,17 @@ namespace Backend.Core.Models.Map
         public string Address { get; set; }
 
         [Required]
-        public int Latitude { get; set; }
+        public double Latitude { get; set; }
 
         [Required]
-        public int Longitude { get; set; }
+        public double Longitude { get; set; }
 
         [Required]
         public int Order { get; set; }
 
         public int CompanyId { get; set; }
+
+        [Required]
+        public int PathId { get; set; }
     }
 }

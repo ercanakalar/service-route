@@ -12,6 +12,8 @@ namespace Backend.Core.Models.User
         public int AuthId { get; set; }
         public Backend.Core.Models.Auth.AuthDto Auth { get; set; }
 
+        public int PathId { get; set; }
+
         public int? CompanyId { get; set; }
         public Backend.Core.Models.Company.CompanyDto Company { get; set; }
 

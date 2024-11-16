@@ -50,6 +50,7 @@ namespace Backend.Service.Services
                 Address = request.Address,
                 Latitude = request.Latitude,
                 Longitude = request.Longitude,
+                PathId = request.PathId,
                 Order = request.Order,
                 CompanyId = request.CompanyId,
                 CreatedAt = DateTime.UtcNow,

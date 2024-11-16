@@ -67,6 +67,7 @@ namespace Backend.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AuthId = table.Column<int>(type: "integer", nullable: false),
+                    PathId = table.Column<int>(type: "integer", nullable: false),
                     CompanyId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -93,11 +94,12 @@ namespace Backend.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Address = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Latitude = table.Column<int>(type: "integer", nullable: false),
-                    Longitude = table.Column<int>(type: "integer", nullable: false),
                     Order = table.Column<int>(type: "integer", nullable: false),
                     CompanyId = table.Column<int>(type: "integer", nullable: false),
+                    PathId = table.Column<int>(type: "integer", nullable: false),
+                    Latitude = table.Column<int>(type: "integer", nullable: false),
+                    Longitude = table.Column<int>(type: "integer", nullable: false),
+                    Address = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
